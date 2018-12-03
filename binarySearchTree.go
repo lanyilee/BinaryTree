@@ -59,7 +59,7 @@ func (t *tree) deleteNode(num int) {
 		}
 		if num == t.data {
 			fmt.Println("father node :" + strconv.Itoa(fatherTree.data))
-			// find the data which should be deleted
+			// find the data to be deleted
 			if t.leftTree == nil && t.rightTree == nil {
 				if fatherTree.leftTree == t {
 					fatherTree.leftTree = nil //delete
@@ -79,10 +79,34 @@ func (t *tree) deleteNode(num int) {
 					fatherTree.rightTree = t.rightTree
 				}
 			} else if t.leftTree != nil && t.rightTree != nil {
-				// find the smallest data in the deleted rightTree
+				// find the minimum data in the deleted rightTree
+				minTree := t.rightTree //the minimum data
+				minFatherTree := t     //the father node of the minimum data
+				// just follow the left path to the last node
+				for {
+					if minTree.leftTree != nil {
+						minFatherTree = minTree
+						minTree = minTree.leftTree
+					} else {
+						break
+					}
+				}
+				// the leftTree of the parent of the smallest node must nil or the rightTree of the node to be deleted
+				if minTree.rightTree != nil {
+					minFatherTree.leftTree = minTree.rightTree
+				} else {
+					minFatherTree.leftTree = nil
+				}
 
+				if fatherTree.leftTree == t {
+					fatherTree.leftTree = minTree
+				} else if fatherTree.rightTree == t {
+					fatherTree.rightTree = minTree
+				}
+				minTree.leftTree = t.leftTree
+				minTree.rightTree = t.rightTree
 			}
-
+			break
 		} else if num < t.data {
 			fatherTree = t
 			t = t.leftTree
@@ -138,4 +162,6 @@ func main() {
 	}
 	t.infixOrder()
 	t.searchNode(15)
+	t.deleteNode(27)
+	t.infixOrder()
 }
